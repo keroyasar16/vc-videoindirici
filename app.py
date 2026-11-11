@@ -143,7 +143,13 @@ def _extract_video(
 ) -> dict:
     options = dict(_YDL_OPTIONS)
     if platform == "youtube":
-        options["remote_components"] = ["ejs:github"]
+        # Prefer the installed, version-pinned EJS solver. Remote code is not
+        # fetched at runtime, keeping Railway deployments reproducible.
+        options["remote_components"] = []
+        options["retries"] = 3
+        options["extractor_retries"] = 3
+        options["fragment_retries"] = 3
+        options["sleep_interval_requests"] = 1
         node_path = shutil.which("node")
         if node_path:
             options["js_runtimes"] = {"node": {"path": node_path}}
@@ -203,9 +209,13 @@ def _extraction_error_message(platform: str, error: DownloadError, operation: st
         )
     if "sign in to confirm" in lowered_details or "not a bot" in lowered_details:
         return (
-            "YouTube bu isteği engelledi. Videonun herkese açık olduğunu kontrol edin "
-            "ve daha sonra yeniden deneyin."
+            "YouTube sunucumuzdan gelen istekte bot doğrulaması istiyor. "
+            "Bu video herkese açık olsa bile indirilemeyebilir; lütfen daha sonra tekrar deneyin."
         )
+    if "http error 429" in lowered_details or "too many requests" in lowered_details:
+        return "YouTube sunucumuza geçici istek sınırı uyguluyor. Lütfen daha sonra tekrar deneyin."
+    if "http error 403" in lowered_details:
+        return "YouTube bu sunucudan yapılan indirmeyi reddetti (403). Daha sonra tekrar deneyin."
     if "video unavailable" in lowered_details:
         return "Bu YouTube videosu kullanılamıyor; silinmiş, gizli veya erişim kısıtlamalı olabilir."
     if not details:

@@ -30,3 +30,12 @@ Parçalara bölünmüş video akışları için indirme eşzamanlılığı 8 par
 Bu klasörü GitHub deposunun köküne koyup Railway üzerinde **Deploy from GitHub repo** ile dağıtın. Dockerfile otomatik algılanır. Railway servisinin Settings > Networking > Custom Domain bölümüne `x.vcchats.com` ve `yt.vcchats.com` alan adlarını ayrı ayrı ekleyin. Railway'in her biri için verdiği DNS hedeflerini domain DNS sağlayıcınızda CNAME olarak tanımlayın. DNS hedeflerini tahmin etmeyin; Railway panelinden kopyalayın. Railway sertifika doğrulaması ve HTTPS etkinleşince iki adrese de erişebilirsiniz.
 
 Dockerfile Node.js 22, FFmpeg, Python ve Gunicorn kurar. `yt-dlp` YouTube doğrulaması için ek bileşen indirmek zorunda kalabilir; ağ engelleri, bot doğrulaması ve platform kısıtlamaları nedeniyle her videonun indirileceği garanti değildir. Video indirmeleri uzun sürebilir ve Railway kaynak sınırlarına takılabilir.
+
+
+## YouTube Railway doğrulama güncellemesi
+
+Bu sürüm yt-dlp varsayılan EJS bağımlılıklarını kurar, Node.js 22 kullanır ve YouTube isteklerinde sınırlı yeniden deneme uygular. X indirme seçenekleri değiştirilmemiştir.
+
+**Önemli:** YouTube `Sign in to confirm you’re not a bot` yanıtı verirse bu sunucunun IP'si / oturum doğrulaması kaynaklı olabilir. Bu güncelleme böyle bir engeli kaldırmayı garanti etmez. Herkese açık hizmette kişisel hesap çerezlerini dağıtmayın. PO Token sağlayıcısı bu pakette kurulmamıştır.
+
+Railway'de GitHub'a dosyaları yükleyip yeniden deploy edin. Deploy Logs'da bağımlılık kurulumunu, çalışma günlüklerinde bot doğrulama mesajını kontrol edin.

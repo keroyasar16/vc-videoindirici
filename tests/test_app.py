@@ -191,7 +191,7 @@ class AppRouteTests(unittest.TestCase):
             options["js_runtimes"],
             {"node": {"path": r"C:\Program Files\nodejs\node.exe"}},
         )
-        self.assertEqual(options["remote_components"], ["ejs:github"])
+        self.assertEqual(options["remote_components"], [])
 
     def test_youtube_api_explains_javascript_runtime_errors(self):
         with patch(
