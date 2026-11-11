@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10111d">
+    <meta name="description" content="{% if platform == 'youtube' %}İndirme izniniz olan herkese açık YouTube videolarını bağlantıyla kaydedin.{% else %}Herkese açık X gönderilerindeki videoları bağlantıyla indirin.{% endif %}">
+    <title>Akış — {% if platform == 'youtube' %}YouTube{% else %}X{% endif %} Video İndirici</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Akış ana sayfa">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 4h14v10a6 6 0 0 1-6 6H5V4Zm5 4v8l6-4-6-4Z"/></svg>
+        </span>
+        <span>akış<span class="brand-dot">.</span></span>
+      </a>
+      <a class="platform-switch" href="{{ alternate_url }}">
+        <span class="status-dot"></span>
+        {% if platform == 'youtube' %}X sürümüne geç{% else %}YouTube sürümüne geç{% endif %}
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow"><span class="eyebrow-line"></span> {% if platform == 'youtube' %}YOUTUBE VİDEO İNDİRİCİ{% else %}X VİDEO İNDİRİCİ{% endif %}</div>
+        <h1>İyi içerik,<br><span>kaybolup gitmesin.</span></h1>
+        <p class="intro">{% if platform == 'youtube' %}YouTube videosunun bağlantısını yapıştır. Videonu birkaç saniyede cihazına kaydet.{% else %}X gönderisinin bağlantısını yapıştır. Videonu birkaç saniyede cihazına kaydet.{% endif %}</p>
+
+        <form class="download-form" id="download-form" data-api-prefix="{{ api_prefix }}">
+          <label class="sr-only" for="post-url">{% if platform == 'youtube' %}YouTube video bağlantısı{% else %}X gönderi bağlantısı{% endif %}</label>
+          <span class="link-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M10 13.5a4 4 0 0 0 5.66 0l3-3A4 4 0 0 0 13 4.84l-1.72 1.72m2.72 3.94a4 4 0 0 0-5.66 0l-3 3A4 4 0 0 0 11 19.16l1.72-1.72"/></svg>
+          </span>
+          <input id="post-url" name="url" type="url" placeholder="{% if platform == 'youtube' %}https://www.youtube.com/watch?v=...{% else %}https://x.com/kullanici/status/...{% endif %}" autocomplete="url" required>
+          <button type="submit" id="submit-button">
+            <span>Videoyu bul</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+          </button>
+        </form>
+
+        <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+        <section class="result-card" id="result-card" aria-label="Video bilgisi" hidden>
+          <div class="preview-wrap">
+            <img id="thumbnail" alt="Video önizlemesi">
+            <span class="preview-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="m9 6 10 6-10 6V6Z"/></svg>
+            </span>
+            <span class="duration" id="duration"></span>
+          </div>
+          <div class="result-info">
+            <div class="result-kicker">İNDİRMEYE HAZIR</div>
+            <h2 id="video-title"></h2>
+            <p id="video-uploader"></p>
+            <div class="quality-control">
+              <label class="quality-label" for="quality-select">Video kalitesi</label>
+              <select id="quality-select" class="quality-select" aria-label="Video kalitesi"></select>
+            </div>
+            <div class="download-actions">
+              <button type="button" class="save-button" id="save-button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v3h14v-3"/></svg>
+                <span>Videoyu indir</span>
+              </button>
+              <button type="button" class="mp3-button" id="mp3-button" aria-label="Yalnızca sesi MP3 olarak indir">
+                <span>MP3</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div class="trust-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Zm-3 9 2 2 4-4"/></svg>
+          <span>{% if platform == 'youtube' %}Yalnızca herkese açık videolar. İndirme izniniz olduğundan emin olun.{% else %}Hesap bilgisi gerekmez. Yalnızca herkese açık gönderiler.{% endif %}</span>
+        </div>
+      </section>
+
+      <section class="steps" aria-label="Nasıl kullanılır">
+        <div class="steps-heading"><span>ÜÇ ADIMDA</span><span class="heading-rule"></span></div>
+        <div class="step-grid">
+          <article class="step">
+            <span class="step-number">01</span>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M11 13 20 4m-7 0h7v7"/></svg>
+            </div>
+            <h2>Bağlantıyı kopyala</h2>
+            <p>{% if platform == 'youtube' %}YouTube'da videonun paylaşım bağlantısını al.{% else %}X'te videonun paylaşım bağlantısını al.{% endif %}</p>
+          </article>
+          <article class="step">
+            <span class="step-number">02</span>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </div>
+            <h2>Buraya yapıştır</h2>
+            <p>Bağlantıyı yukarıdaki kutuya ekle.</p>
+          </article>
+          <article class="step">
+            <span class="step-number">03</span>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v3h14v-3"/></svg>
+            </div>
+            <h2>İndir ve izle</h2>
+            <p>Videon cihazında, dilediğin zaman yanında.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span class="footer-brand">akış<span class="brand-dot">.</span></span>
+      <p>İçerik üreticilerinin haklarına saygı duy. Videoları yalnızca izinli ve kişisel kullanım için indir.</p>
+      <span class="footer-mark">{% if platform == 'youtube' %}YOUTUBE VIDEO TOOL{% else %}X VIDEO TOOL{% endif %}</span>
+    </footer>
+  </body>
+</html>
